@@ -34,7 +34,7 @@ You are a personal AI assistant for students. Use search_timetable for class que
 - Course Q&A grounded in selectable-text PDFs, Markdown, and text files, with filename and page or section references.
 - Conversation context and tool-call output in the notebook.
 
-The `course_materials/` folder currently contains 11 Operating Systems lecture PDFs. [timetable.json](data/timetable.json) contains the weekly schedule, and [timetable.png](data/timetable.png) is the original image. `sample_week.json` contains example assignments and windows that you can edit for your own dates.
+The `course_materials/` folder contains Operating Systems lecture PDFs. Store your private weekly schedule in `data/timetable.json`, using [timetable.example.json](data/timetable.example.json) as a starting point. The file is ignored by Git. When it is absent, the assistant starts with an empty timetable. `sample_week.json` contains example assignments and windows that you can edit for your own dates.
 
 ### Run Locally
 

@@ -3,3 +3,5 @@
 .ipynb_checkpoints/
 .vscode/
 agent.md
+data/timetable.json
+data/timetable.png
