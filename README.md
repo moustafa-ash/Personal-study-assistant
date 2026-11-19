@@ -2,22 +2,24 @@
 
 ## Use Case
 
-Ask about your weekly classes, plan study around deadlines and classes, or ask questions about your course notes. Try “When is my Machine Learning lecture?”, “Plan my study week”, or “Explain normalization using my notes.”
+Ask about your university timetable, find information in your course notes, and plan study time around classes and assignment deadlines. For example, ask “When is my Machine Learning lecture?” or “Explain process states using my OS lectures.”
 
 ## LLM and Provider
 
-The assistant uses GPT-OSS 20B (`openai/gpt-oss-20b`) through Groq's free API and LlamaIndex. Course documents are indexed locally using keyword retrieval. Relevant excerpts and conversation messages are sent to Groq to generate answers.
+The assistant uses `openai/gpt-oss-20b` through Groq's free API with LlamaIndex. It uses `SimpleKeywordTableIndex` to index course documents locally. Conversation messages, tool results, and retrieved excerpts can be sent to Groq when answering a request. The agent has a 180-second workflow timeout.
 
 ## Tools for the Agent
 
 | Tool | Inputs | Output |
 | --- | --- | --- |
-| `get_deadlines` | Start and end dates | Assignments and estimated minutes. |
-| `get_free_slots` | Start and end dates | Merged available windows. |
-| `set_study_availability` | Date and list of start/end windows | Saves and replaces that date’s study windows. |
-| `build_study_plan` | Start and end dates, optional daily limit | Study blocks excluding classes and unfinished minutes. |
-| `search_timetable` | Optional day, course, session type | Matching weekly class rows. |
-| `search_course_materials` | Question | Up to four excerpts with source references. |
+| `get_deadlines` | Start and end dates | Assignments due in that range and their estimated minutes. |
+| `get_free_slots` | Start and end dates | Merged availability windows. |
+| `set_study_availability` | Date and list of start and end times | Saves a complete replacement for that date's windows. An empty list clears them. |
+| `build_study_plan` | Start and end dates, optional daily limit | Study blocks that avoid classes and minutes that remain unscheduled. |
+| `search_timetable` | Optional day, course, and session type | Matching weekly classes and timetable row references. |
+| `search_course_materials` | Question | Up to four keyword-matched excerpts with source references. |
+
+Dates use `YYYY-MM-DD`. Availability uses same-day `HH:MM` start and end times in Africa/Cairo time. Study planning uses a 120-minute daily limit unless another limit is requested. It schedules assignments whose deadlines fall within the requested date range, earliest deadline first.
 
 ## System Prompt
 
@@ -27,33 +29,35 @@ You are a personal AI assistant for students. Use search_timetable for class que
 
 ## Implemented Features
 
-- Weekly timetable lookup with row references and class-aware study scheduling in Africa/Cairo time.
-- Deadline-based study planning from editable data and availability entered through chat.
-- Course Q&A using selectable-text PDFs, Markdown, and text files, with source references.
-- Conversation context and visible tool calls in the notebook.
+- Weekly timetable lookup and study planning that removes class hours from available windows.
+- Study availability entered through chat and saved in [sample_week.json](sample_week.json).
+- Course Q&A grounded in selectable-text PDFs, Markdown, and text files, with filename and page or section references.
+- Conversation context and tool-call output in the notebook.
+
+The `course_materials/` folder currently contains 11 Operating Systems lecture PDFs. [timetable.json](data/timetable.json) contains the weekly schedule, and [timetable.png](data/timetable.png) is the original image. `sample_week.json` contains example assignments and windows that you can edit for your own dates.
 
 ### Run Locally
 
-1. In PowerShell, open the project folder and install dependencies.
+1. Open PowerShell in the project folder and install the dependencies. Skip the first command if `.venv` already exists.
 
    ```powershell
    py -m venv .venv
    .\.venv\Scripts\python.exe -m pip install -r requirement.txt
    ```
 
-2. Copy `.env.example` to `.env` if needed and add your Groq key as `GROQ_API_KEY=your_key`.
-3. Put course files in `course_materials/`, then start the notebook.
+2. If `.env` is missing, copy `.env.example` to `.env`. Add your Groq key as `GROQ_API_KEY=your_key`.
+3. Start the notebook and run its cells in order.
 
    ```powershell
    .\.venv\Scripts\python.exe -m jupyterlab study_planner.ipynb
    ```
 
-4. Run cells in order. After adding or changing course files, rerun the retrieval tools cell to rebuild the index.
+4. Add supported files to `course_materials/` and rerun the **Timetable and course materials** cell to rebuild the index. Edit `sample_week.json` for assignment deadlines, or tell the assistant your availability. When changing a date's availability, provide every window you want to keep for that date.
 
-Tell the assistant your available hours for a date, or edit [sample_week.json](sample_week.json) for deadlines and free windows and [timetable.json](data/timetable.json) for weekly classes. The [original timetable](data/timetable.png) is included for reference. PDFs must contain selectable text. Check [agent.md](agent.md) for technical details.
+The **Check the example** cell verifies the supplied sample data. Skip it if you have changed the sample windows. PDFs need selectable text. Keyword retrieval can miss relevant passages when a question uses different wording, so check the cited sources.
 
 ## Future Work
 
 - OCR for scanned course notes.
-- Semantic retrieval for questions using different wording from the notes.
+- Semantic retrieval for questions that use different wording from the notes.
 - One-off timetable changes such as class cancellations.
