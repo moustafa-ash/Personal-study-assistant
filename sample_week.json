@@ -1,0 +1,34 @@
+{
+  "assignments": [
+    {
+      "id": "ml-lab",
+      "task": "Machine Learning lab",
+      "due": "2026-11-24T19:00",
+      "estimated_minutes": 120
+    },
+    {
+      "id": "db-report",
+      "task": "Database report",
+      "due": "2026-11-25T18:00",
+      "estimated_minutes": 150
+    }
+  ],
+  "free_slots": [
+    {
+      "start": "2026-11-23T18:00",
+      "end": "2026-11-23T19:00"
+    },
+    {
+      "start": "2026-11-23T18:45",
+      "end": "2026-11-23T20:00"
+    },
+    {
+      "start": "2026-11-24T18:00",
+      "end": "2026-11-24T19:00"
+    },
+    {
+      "start": "2026-11-25T18:00",
+      "end": "2026-11-25T20:00"
+    }
+  ]
+}
